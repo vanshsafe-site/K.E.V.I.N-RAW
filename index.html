@@ -1161,60 +1161,23 @@ loadVoices();
 //  SPEECH SYNTHESIS
 // ═══════════════════════════════════════════════
 
-function speak(text, cb) {
-  // FIX 1: Detach previous utterance handlers BEFORE cancel to prevent
-  // the old onend from firing its callback and cascading unexpected speech.
-  if (currentUtterance) {
-    currentUtterance.onend  = null;
-    currentUtterance.onerror = null;
-    currentUtterance = null;
-  }
-  if (synth.speaking) {
-  synth.pause();
-  synth.resume(); // smoother than cancel
-}
+if (!text || !text.trim()) return;
 
-  const u = new SpeechSynthesisUtterance(text);
-  currentUtterance = u;
+showKevinSub(text);
+setStatus('speaking');
 
-  // FIX 3: Use pre-loaded local voice to eliminate startup lag
-  if (preferredVoice) u.voice = preferredVoice;
-  u.rate  = 0.92;
-  u.pitch = 1.0;
-  showKevinSub(text);
-  setTimeout(() => setStatus('speaking'), 0);
+speechSynthesis.cancel();
 
-  u.onend = () => {
-    if (currentUtterance !== u) return; // stale utterance — ignore
-    currentUtterance = null;
-    clearTimeout(synthHeartbeat);
-    setStatus('idle');
-    if (cb) cb();
-  };
-  u.onerror = () => {
-    if (currentUtterance !== u) return;
-    currentUtterance = null;
-    clearTimeout(synthHeartbeat);
-    setStatus('idle');
-    // Do NOT fire cb on error — prevents unexpected restarts
-  };
-  if (!text || !text.trim()) return;
-  synth.speak(u);
-  currentUtterance = u;
-  // FIX 3: Chrome speechSynthesis pauses silently after ~15 s.
-  // Periodically pause+resume to keep it alive.
-  clearTimeout(synthHeartbeat);
-  (function heartbeat() {
-    if (synth.speaking) {
-      synth.pause();
-      synth.resume();
-      synthHeartbeat = setTimeout(heartbeat, 15000);
-    }
-  })(); // start after 10s delay via the recursive call above — kick off now
-  synthHeartbeat = setTimeout(function hb() {
-    if (synth.speaking) { synth.pause(); synth.resume(); synthHeartbeat = setTimeout(hb, 15000); }
-  }, 15000);
-}
+const u = new SpeechSynthesisUtterance(text);
+u.rate = 0.9;
+u.pitch = 1;
+
+u.onend = () => {
+  setStatus('idle');
+  if (cb) cb();
+};
+
+speechSynthesis.speak(u);
 
 function showKevinSub(text) {
   const el = document.getElementById('kevinLine');
