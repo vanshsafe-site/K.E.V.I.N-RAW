@@ -937,7 +937,7 @@ const ADVICE_DB = {
   "compulsions": ["Allow yourself the urge without acting — the anxiety will peak and then fall on its own.", "Gradually delay the compulsion by 1 minute, then 2, then 5 — you build tolerance.", "Find an incompatible activity: something you physically cannot do while performing the compulsion.", "ERP therapy with a trained professional has the highest evidence base for compulsions."],
   "impulsivity": ["Pause and breathe for just 10 seconds before acting on any strong urge.", "Write down the impulse instead of acting on it immediately — then decide later.", "Identify your triggers and create environmental barriers between you and impulsive actions.", "Regular aerobic exercise measurably improves impulse control over time."],
   "addiction": ["Replace the behavior with a specific healthier alternative — not just willpower alone.", "Identify your specific triggers: emotional, environmental, social, and address each one.", "Accountability to one trusted person makes recovery dramatically more sustainable.", "Relapse does not erase progress. Recovery is rarely linear — it counts everything."],
-  "self-harm": ["When the urge arises, try holding ice cubes, snapping a rubber band, or intense exercise to redirect.", "Write about the feeling that preceded the urge — identifying it helps interrupt the cycle.", "You deserve care. Please reach out to someone you trust or a crisis line right now.", "Professional support can help you develop a full set of alternative coping tools."],
+  "self-harm": ["When the urge arises, call or text someone you trust, go for an intense walk or run, or write out everything you're feeling in detail.", "Write about the feeling that preceded the urge — identifying it helps interrupt the cycle.", "You deserve care. Please reach out to someone you trust or a crisis line right now. You are not alone in this.", "Professional support can help you develop a full set of alternative coping tools — please consider reaching out to a therapist or counselor."],
   "eating disorder": ["Your body needs fuel to function, heal, and feel well — this is a biological fact, not a choice.", "Challenge one eating-related thought today by asking whether it's factual or fear-based.", "Recovery from eating disorders is fully possible with the right professional support.", "Please connect with an eating disorder specialist — this is complex and you deserve real help."],
   "body image issues": ["Your body is doing extraordinary things right now just to keep you alive.", "Challenge every appearance-critical thought: is this factual, or is it a story you've learned?", "Unfollow accounts that consistently make you feel worse about yourself.", "You are not your appearance. Your worth has never been and will never be visual."],
   "hoarding": ["Start with one small drawer or surface — not the whole space, just one small part.", "Ask three questions: Do I use this? Do I love this? Would I miss this if it was gone?", "Every item released is a genuine act of courage — acknowledge it as such.", "A therapist specializing in OCD spectrum issues can provide life-changing support here."],
@@ -1140,28 +1140,89 @@ const FLOWCHARTS = {
 //  STATE
 // ═══════════════════════════════════════════════
 
-let currentMode = null;
-let recognition  = null;
-let shouldStop   = false;
-let isListening  = false;
-let isVenting    = false;
-let lastAdvice   = "";
-let subtitleTimerK = null;
+let currentMode      = null;
+let recognition      = null;
+let shouldStop       = false;
+let isListening      = false;
+let isVenting        = false;
+let lastAdvice       = "";
+let subtitleTimerK   = null;
+let currentUtterance = null;   // FIX: track utterance to prevent callback cascade
+let preferredVoice   = null;   // FIX: pre-loaded voice for reduced lag
+let synthHeartbeat   = null;   // FIX: Chrome 15s pause bug workaround
+let ventBuffer       = "";     // FIX: accumulate transcript for "kevin stop" detection
 const synth = window.speechSynthesis;
+
+// ── Pre-load voices to eliminate first-speak lag ──────────────────────────
+function loadVoices() {
+  const voices = synth.getVoices();
+  if (voices.length > 0) {
+    preferredVoice =
+      voices.find(v => v.localService && v.lang.startsWith('en-')) ||
+      voices.find(v => v.lang.startsWith('en')) ||
+      voices[0];
+  }
+}
+synth.addEventListener('voiceschanged', loadVoices);
+loadVoices();
 
 // ═══════════════════════════════════════════════
 //  SPEECH SYNTHESIS
 // ═══════════════════════════════════════════════
 
 function speak(text, cb) {
-  if (synth.speaking) synth.cancel();
+  // FIX 1: Detach previous utterance handlers BEFORE cancel to prevent
+  // the old onend from firing its callback and cascading unexpected speech.
+  if (currentUtterance) {
+    currentUtterance.onend  = null;
+    currentUtterance.onerror = null;
+    currentUtterance = null;
+  }
+  if (synth.speaking) {
+  synth.pause();
+  synth.resume(); // smoother than cancel
+}
+
   const u = new SpeechSynthesisUtterance(text);
+  currentUtterance = u;
+
+  // FIX 3: Use pre-loaded local voice to eliminate startup lag
+  if (preferredVoice) u.voice = preferredVoice;
   u.rate  = 0.92;
   u.pitch = 1.0;
   setStatus('speaking');
   showKevinSub(text);
-  u.onend = u.onerror = () => { setStatus('idle'); if (cb) cb(); };
+
+  u.onend = () => {
+    if (currentUtterance !== u) return; // stale utterance — ignore
+    currentUtterance = null;
+    clearTimeout(synthHeartbeat);
+    setStatus('idle');
+    if (cb) cb();
+  };
+  u.onerror = () => {
+    if (currentUtterance !== u) return;
+    currentUtterance = null;
+    clearTimeout(synthHeartbeat);
+    setStatus('idle');
+    // Do NOT fire cb on error — prevents unexpected restarts
+  };
+
   synth.speak(u);
+
+  // FIX 3: Chrome speechSynthesis pauses silently after ~15 s.
+  // Periodically pause+resume to keep it alive.
+  clearTimeout(synthHeartbeat);
+  (function heartbeat() {
+    if (synth.speaking) {
+      synth.pause();
+      synth.resume();
+      synthHeartbeat = setTimeout(heartbeat, 15000);
+    }
+  })(); // start after 10s delay via the recursive call above — kick off now
+  synthHeartbeat = setTimeout(function hb() {
+    if (synth.speaking) { synth.pause(); synth.resume(); synthHeartbeat = setTimeout(hb, 15000); }
+  }, 15000);
 }
 
 function showKevinSub(text) {
@@ -1216,11 +1277,11 @@ function setStatus(state) {
 //  SPEECH RECOGNITION FACTORY
 // ═══════════════════════════════════════════════
 
-function newRecognition(continuous = false) {
+function newRecognition(continuous = false, interim = false) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { speak("Speech recognition is not available. Please open this in Chrome or Edge."); return null; }
   const r = new SR();
-  r.interimResults = false;
+  r.interimResults = interim;
   r.continuous     = continuous;
   return r;
 }
@@ -1236,9 +1297,17 @@ function stopRecognition() {
 
 function activateMode(mode) {
   stopRecognition();
+  // Detach utterance before cancel — prevents mode-switch from firing stale callbacks
+  if (currentUtterance) {
+    currentUtterance.onend  = null;
+    currentUtterance.onerror = null;
+    currentUtterance = null;
+  }
   synth.cancel();
+  clearTimeout(synthHeartbeat);
   shouldStop  = false;
   isVenting   = false;
+  ventBuffer  = "";
   currentMode = mode;
 
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -1261,9 +1330,17 @@ function activateMode(mode) {
 
 function exitMode() {
   stopRecognition();
+  // Detach current utterance before cancel to avoid stray callbacks
+  if (currentUtterance) {
+    currentUtterance.onend  = null;
+    currentUtterance.onerror = null;
+    currentUtterance = null;
+  }
   synth.cancel();
+  clearTimeout(synthHeartbeat);
   shouldStop  = true;
   isVenting   = false;
+  ventBuffer  = "";
   currentMode = null;
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('chartPanel').classList.remove('active');
@@ -1324,35 +1401,71 @@ function startSpeak() {
   try { recognition.start(); } catch(e) { isListening=false; setStatus('idle'); }
 }
 
-function keepTalking() {
-  const m = SOOTHING[rnd(SOOTHING)];
-  speak(m, () => { if (!shouldStop) keepTalking(); });
-}
+let isSpeakingLoop = false;
 
+function keepTalking() {
+  if (shouldStop || currentMode !== 'speak') {
+    isSpeakingLoop = false;
+    return;
+  }
+
+  isSpeakingLoop = true;
+
+  const m = SOOTHING[rnd(SOOTHING)];
+  speak(m, () => {
+    if (!shouldStop && currentMode === 'speak') {
+      setTimeout(keepTalking, 250);
+    }
+  });
+}
 // ═══════════════════════════════════════════════
 //  LISTEN MODE
 // ═══════════════════════════════════════════════
 
 function startListen() {
-  recognition = newRecognition(true);
+  // FIX 2: Use interimResults=true so we catch speech as it comes in,
+  // and accumulate across segments — "kevin" and "stop" may arrive separately.
+  recognition = newRecognition(true, true);
   if (!recognition) return;
   isListening = true;
   isVenting   = true;
+  ventBuffer  = "";   // reset accumulated transcript
   setStatus('listening');
 
   recognition.onresult = e => {
-    const t = e.results[e.results.length-1][0].transcript.toLowerCase().trim();
-    showUserSub(t);
+    // Collect only final results from this event batch
+    let finalChunk = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        finalChunk += e.results[i][0].transcript + ' ';
+      }
+    }
+    finalChunk = finalChunk.toLowerCase().trim();
 
-    if (t.includes('exit')) {
-      isVenting = false; stopRecognition();
+    if (finalChunk) {
+      showUserSub(finalChunk);
+      // Accumulate into buffer; keep last 400 chars to avoid unbounded growth
+      ventBuffer = (ventBuffer + ' ' + finalChunk).slice(-400).trim();
+    }
+
+    // FIX 2: Check the accumulated buffer for stop phrases, not just the latest chunk.
+    // This catches cases where "kevin" and "stop" land in separate result events.
+    const check = ventBuffer;
+    const stopNow = check.includes('kevin stop') || check.includes('stop kevin') ||
+                    check.includes('kevin, stop') || check.includes("kevin,stop") ||
+                    // Also catch just "stop" as a standalone word (common shorthand)
+                    /\bstop\b/.test(finalChunk);
+    const exitNow = check.includes('exit') || finalChunk.includes('exit');
+
+    if (exitNow) {
+      ventBuffer = ''; isVenting = false; stopRecognition();
       speak("Goodbye, dear. I'm proud of you for reaching out. Please take care of yourself.", exitMode);
-    } else if (t.includes('kevin stop') || t.includes('stop kevin')) {
-      isVenting = false; stopRecognition();
+    } else if (stopNow) {
+      ventBuffer = ''; isVenting = false; stopRecognition();
       const r = SUPPORT_RESPONSES[rnd(SUPPORT_RESPONSES)];
       speak(r, () => speak("I'm here whenever you need me. Tap the orb if you'd like to continue.", () => { isVenting = false; }));
     }
-    // otherwise — keep listening silently, just show transcript briefly
+    // Otherwise — keep listening silently, just show transcript briefly
   };
 
   recognition.onerror = e => {
@@ -1423,9 +1536,11 @@ function startChartVoice() {
   if (!recognition) return;
   isListening = true;
   setStatus('listening');
+  let gotResult = false;  // FIX 4: track if we got a result for onend restart logic
 
   recognition.onresult = e => {
     const t = e.results[0][0].transcript.toLowerCase().trim();
+    gotResult = true;
     isListening = false;
     showUserSub(t);
     setStatus('processing');
@@ -1434,7 +1549,12 @@ function startChartVoice() {
 
     let matched = false;
     for (const key of Object.keys(FLOWCHARTS)) {
-      if (t.includes(key)) { displayChart(key); matched = true; break; }
+      if (t.includes(key)) {
+        // FIX 4: pass startChartVoice as callback so voice restarts after speech ends
+        displayChart(key, startChartVoice);
+        matched = true;
+        break;
+      }
     }
     if (!matched)
       speak("Say a chart name: anxiety, depression, stress, self esteem, crisis, or sleep.", startChartVoice);
@@ -1444,7 +1564,15 @@ function startChartVoice() {
     isListening=false; setStatus('idle');
     if (!shouldStop && e.error !== 'aborted') setTimeout(startChartVoice, 1000);
   };
-  recognition.onend = () => { isListening=false; };
+
+  // FIX 4: If recognition ends with no result (timeout/silence), restart automatically
+  recognition.onend = () => {
+    isListening = false;
+    if (!shouldStop && !gotResult && currentMode === 'charts' && !synth.speaking) {
+      setTimeout(startChartVoice, 600);
+    }
+  };
+
   try { recognition.start(); } catch(e){ isListening=false; setStatus('idle'); }
 }
 
@@ -1464,7 +1592,9 @@ function buildChartPanel() {
   });
 }
 
-function displayChart(key) {
+// FIX 4: Accept optional callback — when called from voice, cb = startChartVoice
+// so recognition automatically restarts after the chart speech finishes.
+function displayChart(key, cb) {
   const chart = FLOWCHARTS[key];
   if (!chart) return;
 
@@ -1481,7 +1611,7 @@ function displayChart(key) {
     node.style.animationDelay = `${i * 0.1}s`;
   });
 
-  speak(chart.speech);
+  speak(chart.speech, cb);
 }
 
 function renderNodes(nodes) {
@@ -1523,11 +1653,7 @@ function rnd(arr) { return Math.floor(Math.random() * arr.length); }
 //  INIT
 // ═══════════════════════════════════════════════
 
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    speak("K-E-V-I-N Raw is now activated. I am your personal emotional support intelligence. Select a mode to begin, or tap the information button for help.");
-  }, 600);
-});
+// Disabled auto speak to prevent mic conflicts
 </script>
 </body>
 </html>
