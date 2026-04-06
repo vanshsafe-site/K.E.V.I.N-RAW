@@ -771,6 +771,77 @@ header {
   .kevin-line { font-size: 0.9em; }
   .modal-box { padding: 26px 20px; }
 }
+/* ═══════════════════════════════════════
+   PANEL
+═══════════════════════════════════════ */
+
+.chart-panel {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════ */
+
+.chart-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.chart-btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid #444;
+  background: #111;
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.chart-btn:hover {
+  color: #fff;
+  border-color: #00f7ff;
+  box-shadow: 0 0 8px #00f7ff66;
+}
+
+.chart-btn.active {
+  background: #00f7ff;
+  color: #000;
+  border-color: #00f7ff;
+  box-shadow: 0 0 12px #00f7ff;
+}
+
+/* ═══════════════════════════════════════
+   DISPLAY
+═══════════════════════════════════════ */
+
+.chart-display {
+  background: #0a0a0a;
+  border-radius: 16px;
+  padding: 20px;
+  min-height: 300px;
+  border: 1px solid #222;
+  box-shadow: inset 0 0 20px #000;
+}
+
+.chart-placeholder {
+  text-align: center;
+  opacity: 0.5;
+  padding-top: 100px;
+}
+
+/* ═══════════════════════════════════════
+   FLOWCHART
+═══════════════════════════════════════ */
+
 </style>
 </head>
 <body>
@@ -800,8 +871,9 @@ header {
     <button class="mode-btn speak"   onclick="activateMode('speak')"  >🎤 SPEAK</button>
     <button class="mode-btn listen"  onclick="activateMode('listen')" >👂 LISTEN</button>
     <button class="mode-btn consult" onclick="activateMode('consult')">⚡ CONSULT</button>
-    <button class="mode-btn charts"  onclick="activateMode('charts')" >📊 CHARTS</button>
+  
   </div>
+
 
   <!-- Orb -->
   <div class="orb-area" id="orbArea">
@@ -823,8 +895,17 @@ header {
 
   <!-- Chart panel -->
   <div class="chart-panel" id="chartPanel">
+
+    <!-- Chart Buttons -->
     <div class="chart-select" id="chartSelect"></div>
-    <div id="chartDisplay"></div>
+  
+    <!-- Chart Display -->
+    <div class="chart-display" id="chartDisplay">
+      <div class="chart-placeholder">
+        Select a chart to begin
+      </div>
+    </div>
+  
   </div>
 
   <!-- Subtitle strip -->
@@ -838,7 +919,7 @@ header {
 <!-- Floating buttons -->
 <div class="fab-row">
   <button class="fab" onclick="openModal()" title="Instructions">ℹ</button>
-  <button class="fab" onclick="exitMode()" title="Exit / Reset">✕</button>
+  <button class="fab" onclick="exitMode(false)" title="Exit / Reset">✕</button>
 </div>
 
 <!-- Instructions Modal -->
@@ -850,9 +931,8 @@ header {
     <div class="isect">
       <h3>🎤 Speak Mode</h3>
       <ul>
-        <li>Kevin speaks motivational messages directly to you</li>
-        <li>Tap the orb to activate, then say <span class="cmd">more</span> for a new message</li>
-        <li>Say <span class="cmd">keep talking</span> for continuous support</li>
+        <li>K.E.V.I.N speaks motivational messages directly to you</li>
+        <li>Tap the orb to activate, then say <span class="cmd">keep talking</span> for a new message</li>
         <li>Say <span class="cmd">thanks</span> or <span class="cmd">exit</span> to stop</li>
       </ul>
     </div>
@@ -860,10 +940,10 @@ header {
     <div class="isect">
       <h3>👂 Listen Mode</h3>
       <ul>
-        <li>Kevin listens — vent freely without any judgment</li>
+        <li>K.E.V.I.N listens — vent freely without any judgment</li>
         <li>Tap the orb to begin. Speak as long as you need</li>
-        <li>Say <span class="cmd">Kevin stop</span> when you're done talking</li>
-        <li>Kevin will respond with a supportive message</li>
+        <li>Say <span class="cmd">pooja stop</span> when you're done talking</li>
+        <li>K.E.V.I.N will respond with a supportive message</li>
         <li>Say <span class="cmd">exit</span> to end the session</li>
       </ul>
     </div>
@@ -871,11 +951,10 @@ header {
     <div class="isect">
       <h3>⚡ Consult Mode</h3>
       <ul>
-        <li>Tell Kevin what you're experiencing — e.g. "I have anxiety"</li>
-        <li>Kevin identifies the condition and provides tailored guidance</li>
+        <li>Tap the orb and tell K.E.V.I.N what you're experiencing</li>
+        <li>e.g. "I have anxiety" or "I feel lonely"</li>
+        <li>K.E.V.I.N identifies the concern and provides tailored guidance</li>
         <li>Over 100 mental health conditions recognized</li>
-        <li>Say <span class="cmd">again</span> to repeat the advice</li>
-        <li>Say <span class="cmd">exit</span> to end</li>
       </ul>
     </div>
 
@@ -883,8 +962,8 @@ header {
       <h3>📊 Charts Mode</h3>
       <ul>
         <li>View mental health lifestyle flowcharts on screen</li>
-        <li>Click a chart name button or tap orb and say the name</li>
-        <li>Kevin reads the chart aloud as it builds on screen</li>
+        <li>Click a chart name button to display and hear it read aloud</li>
+        <li>Or tap the orb and say the chart name</li>
         <li>Available: <span class="cmd">anxiety</span> <span class="cmd">depression</span> <span class="cmd">stress</span> <span class="cmd">self-esteem</span> <span class="cmd">crisis</span> <span class="cmd">sleep</span></li>
       </ul>
     </div>
@@ -894,635 +973,20 @@ header {
       <ul>
         <li>Allow microphone access when prompted by your browser</li>
         <li>Works best on Chrome or Edge (Web Speech API required)</li>
-        <li>Kevin is a supportive AI, not a licensed medical professional</li>
-        <li>Tap ✕ button or say <span class="cmd">exit</span> at any time to reset</li>
-        <li>If tap-to-speak doesn't work, just say your command clearly</li>
+        <li>K.E.V.I.N is a supportive AI, not a licensed medical professional</li>
+        <li>Tap ✕ button at any time to reset all modes</li>
       </ul>
     </div>
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════
+     K.E.V.I.N ENGINE — connects speak.js & listen.js,
+     implements consult & charts, drives subtitle display
+     ══════════════════════════════════════════════════════ -->
+<script src="advice.js"></script>
 <script>
-// ═══════════════════════════════════════════════
-//  DATA — ADVICE DATABASE (110+ conditions)
-// ═══════════════════════════════════════════════
-
-const ADVICE_DB = {
-  "anxiety": ["Take slow deep breaths — inhale 4 counts, hold 4, exhale 6. Repeat three times.", "Use the 5-4-3-2-1 grounding method: name 5 things you see, 4 you feel, 3 you hear, 2 you smell, 1 you taste.", "Write your worries down — externalizing them removes their grip on your mind.", "Limit caffeine, take a short walk, and remind yourself that anxiety is temporary."],
-  "depression": ["Take a short walk outside — even 10 minutes can meaningfully shift your neurochemistry.", "Reach out to one trusted person today, even just a brief message counts deeply.", "Choose one tiny meaningful task and complete it — action creates motivation, not the reverse.", "Be compassionate with yourself. Depression is a medical condition, not a personal failure."],
-  "stress": ["Prioritize your top 3 tasks only, and give yourself permission to let everything else wait.", "Put on calming music or nature sounds — your nervous system responds to sound environment.", "Step away for 5 minutes. Breathe, stretch, reset. You'll return more effective.", "Write down everything that's stressing you — the act of naming it halves its weight."],
-  "pressure": ["Break your goal into the smallest possible next step. Only focus on that step.", "Communicate openly about your workload with someone you trust — you're not alone.", "Short strategic breaks prevent the burnout that kills long-term performance.", "Progress matters more than perfection. Show up imperfect and keep moving."],
-  "sad": ["Allow yourself to feel it without judgment — emotions are information, not weakness.", "Something that always makes you smile: watch it, listen to it, or remember it.", "Spend time with a living creature — a pet, a friend, anyone who radiates warmth.", "This feeling is real and valid, and it will also pass. Hold both truths."],
-  "sadness": ["Write down three specific things you're genuinely grateful for — specificity matters.", "Create something — draw, cook, write, build — expressing emotion transforms it.", "Call or text someone who listens without trying to immediately fix you.", "Movement helps even when it's the last thing you want. A slow walk counts."],
-  "worried": ["List what's worrying you, then circle only what you can actually control right now.", "Deep breathing activates your parasympathetic nervous system — it physically calms you.", "Ask yourself: is this a real problem or an imagined worst-case? Most worry is the latter.", "Give yourself a 10-minute 'worry window' — then close it and redirect."],
-  "anger": ["Step away before responding. No important decision should be made in anger.", "Physical movement transforms anger energy: walk fast, run, or do push-ups.", "Write out exactly what you feel before saying it to anyone.", "Ask: what am I actually hurt about underneath this anger? That's the real message."],
-  "guilt": ["Everyone makes mistakes. Self-punishment beyond acknowledgment serves no one.", "Make amends where appropriate, learn from it, and consciously choose to move forward.", "Write yourself a letter of understanding — treat yourself as you'd treat a good friend.", "Guilt means your values are intact. Now use that awareness to grow."],
-  "shame": ["Shame thrives in silence and dissolves in compassionate connection — share it with one safe person.", "Shame says 'I am bad.' Guilt says 'I did something bad.' They are very different.", "Write about your experience in third person — it creates helpful distance and insight.", "You are not the worst thing you've ever done. You are the whole of who you are."],
-  "loneliness": ["Send one message to someone today — a hello, a memory, anything. Connection starts small.", "Join one group around something you care about — shared purpose creates real bonds.", "Spend time outdoors — public space and nature both ease isolation meaningfully.", "Loneliness is a signal your brain sends when you need connection. Listen to it."],
-  "isolation": ["Change your environment even briefly — a café, a park bench, a library changes your state.", "Set one small social goal per day and celebrate when you meet it.", "Volunteer — contributing to others is one of the most effective antidotes to isolation.", "Ask honestly: is this chosen solitude or protective withdrawal? The answer guides the response."],
-  "fomo": ["Social media shows curated highlights, never the full story of anyone's life.", "The most interesting life is the one you're intentionally building, not passively watching.", "Find what genuinely fills YOU with meaning — independent of what others are doing.", "FOMO is comparing your insides to everyone else's outsides. It's never a fair comparison."],
-  "insomnia": ["Establish a consistent sleep and wake time — your circadian rhythm responds to regularity.", "Screens off 45 minutes before bed — blue light disrupts melatonin production.", "If you can't sleep after 20 minutes, get up and do something calm until drowsy.", "Try 4-7-8 breathing: inhale 4 counts, hold 7, exhale 8. Activates sleep response."],
-  "fatigue": ["Your body is communicating a real need — rest is not laziness, it is recovery.", "Break tasks into smaller segments with genuine rest breaks between them.", "Check hydration — even mild dehydration causes significant cognitive and physical fatigue.", "Consider whether emotional weight is amplifying your physical tiredness."],
-  "grief": ["Grief is love with nowhere to go — it is proportional to how much you cared.", "Allow yourself to mourn fully. There is no timeline or correct way to grieve.", "Honor your loss with a small personal ritual — it gives form to formless feeling.", "Grief comes in waves. When a wave hits, let it. Resisting prolongs the pain."],
-  "regret": ["The version of you who made that decision had different information. Be fair to them.", "Ask: what did this teach me? That transforms regret into something useful.", "Talk to someone trusted — externalizing regret reduces its power over you.", "Focus your energy on the present — that's where you still have the ability to act."],
-  "envy": ["Use envy as a compass — it accurately points toward what you genuinely want.", "Practice gratitude for your unique circumstances, however imperfect they are.", "Someone else's success does not diminish what's possible for you. That's not how life works.", "Redirect envy's energy into specific action toward what you actually want."],
-  "fear": ["Name the fear specifically — vague fear is always worse than named fear.", "Break the feared thing into the smallest possible first step and just take that one step.", "Ask: what is the realistic worst case? What would I do if it happened? Preparedness reduces fear.", "Fear and excitement share the same physiological signature. Reframe it deliberately."],
-  "paranoia": ["Challenge the thought: what is the actual evidence for this belief?", "Ground yourself by describing your immediate environment out loud and in detail.", "Share the thought with someone you trust — a reality check from outside your head helps.", "Reduce stimulants, get rest, and practice slow breathing to calm a hypervigilant nervous system."],
-  "overthinking": ["Action is the most reliable cure for overthinking — do something, anything small.", "Set a 10-minute thinking limit. When time is up, decide and move.", "Write the thoughts out — your brain keeps recycling them because it thinks you haven't registered them.", "Ask: is there actually a decision required here, or am I just spiraling?"],
-  "boredom": ["Boredom is your creativity waiting for direction — give it one specific project.", "Try something completely new today, however small — novelty is the antidote.", "Change your environment — sometimes a new space unlocks a new state of mind.", "Consider whether the boredom is actually restlessness disguising a need for change."],
-  "insecurity": ["Write down three genuine strengths you have — make them specific and real.", "Most people are too preoccupied with their own insecurities to judge yours as harshly as you think.", "Surround yourself with people who appreciate who you actually are.", "Self-confidence is built through repeated small acts of courage, not through waiting to feel ready."],
-  "perfectionism": ["Done imperfectly is infinitely more valuable than perfect and unfinished.", "Ask yourself: what is the actual cost of being good enough here versus perfect?", "Celebrate progress and effort, not just flawless outcomes.", "Perfectionism is often fear of judgment in disguise — ask what you're really afraid of."],
-  "dissociation": ["Ground yourself immediately: press your feet into the floor and name what you physically feel.", "Use your five senses intensely — cold water, strong scent, rough texture — to anchor to the present.", "Speak out loud: describe exactly where you are and what is around you.", "Drink cold water slowly and take five slow deep breaths, focusing entirely on each."],
-  "obsessions": ["A thought is not a command or a prediction — you can observe it without obeying it.", "Practice briefly postponing engagement with the thought — 5 minutes, then 10.", "Mindfulness: notice the thought without judgment, label it 'obsessive thought,' and return to breath.", "Professional support, especially ERP therapy, works very well for intrusive obsessions."],
-  "compulsions": ["Allow yourself the urge without acting — the anxiety will peak and then fall on its own.", "Gradually delay the compulsion by 1 minute, then 2, then 5 — you build tolerance.", "Find an incompatible activity: something you physically cannot do while performing the compulsion.", "ERP therapy with a trained professional has the highest evidence base for compulsions."],
-  "impulsivity": ["Pause and breathe for just 10 seconds before acting on any strong urge.", "Write down the impulse instead of acting on it immediately — then decide later.", "Identify your triggers and create environmental barriers between you and impulsive actions.", "Regular aerobic exercise measurably improves impulse control over time."],
-  "addiction": ["Replace the behavior with a specific healthier alternative — not just willpower alone.", "Identify your specific triggers: emotional, environmental, social, and address each one.", "Accountability to one trusted person makes recovery dramatically more sustainable.", "Relapse does not erase progress. Recovery is rarely linear — it counts everything."],
-  "self-harm": ["When the urge arises, call or text someone you trust, go for an intense walk or run, or write out everything you're feeling in detail.", "Write about the feeling that preceded the urge — identifying it helps interrupt the cycle.", "You deserve care. Please reach out to someone you trust or a crisis line right now. You are not alone in this.", "Professional support can help you develop a full set of alternative coping tools — please consider reaching out to a therapist or counselor."],
-  "eating disorder": ["Your body needs fuel to function, heal, and feel well — this is a biological fact, not a choice.", "Challenge one eating-related thought today by asking whether it's factual or fear-based.", "Recovery from eating disorders is fully possible with the right professional support.", "Please connect with an eating disorder specialist — this is complex and you deserve real help."],
-  "body image issues": ["Your body is doing extraordinary things right now just to keep you alive.", "Challenge every appearance-critical thought: is this factual, or is it a story you've learned?", "Unfollow accounts that consistently make you feel worse about yourself.", "You are not your appearance. Your worth has never been and will never be visual."],
-  "hoarding": ["Start with one small drawer or surface — not the whole space, just one small part.", "Ask three questions: Do I use this? Do I love this? Would I miss this if it was gone?", "Every item released is a genuine act of courage — acknowledge it as such.", "A therapist specializing in OCD spectrum issues can provide life-changing support here."],
-  "mania": ["Recognize when your energy and ideas feel unusually elevated — this awareness is key.", "Contact your support system and let them know what's happening before it escalates.", "Calm, consistent routine is one of the most powerful stabilizers during manic episodes.", "If prescribed medication, ensure you're taking it. Stopping is often the first sign of an episode."],
-  "hypomania": ["Track your mood daily — recognizing early escalation lets you intervene before it intensifies.", "Deliberately slow your pace: commit to 8 hours of sleep even if you don't feel like you need it.", "Tell someone you trust what you're experiencing so they can help you monitor.", "Contact your mental health provider early — early intervention prevents full episodes."],
-  "psychosis": ["Focus on your immediate, concrete, physical surroundings — describe them aloud.", "Create a safe, familiar, low-stimulation environment around you right now.", "Please contact a trusted person, caregiver, or mental health professional immediately.", "If you're on prescribed medication, ensure you are taking it and contact your prescriber."],
-  "schizophrenia": ["Consistent daily routine reduces cognitive load and stress that can worsen symptoms.", "Gentle regular physical activity — walking, stretching — supports neurological stability.", "Stay closely connected with your treatment team; medication management is central to wellbeing.", "A safe, calm, predictable environment is one of the most therapeutic things available to you."],
-  "borderline personality disorder": ["DBT — Dialectical Behavior Therapy — was specifically designed for BPD and has strong evidence.", "Practice TIPP when emotions are overwhelming: Temperature, Intense exercise, Paced breathing, Paired relaxation.", "Stable, consistent relationships are deeply healing — invest in people who show up reliably.", "Your emotions are intense, valid, and manageable with the right tools."],
-  "narcissism": ["Self-awareness is the first and most important step — the fact you're asking suggests it's present.", "Practice deliberate perspective-taking: imagine the complete inner life of the people around you.", "Genuine relationships require vulnerability, not performance — try it in one safe relationship.", "Therapy, particularly schema-focused or psychodynamic, can support real change over time."],
-  "antisocial behavior": ["Look for the smallest point of genuine common ground in your interactions today.", "Empathy can be developed — it is a skill as much as a trait. Practice it deliberately.", "Consider what specifically drives the behavior — boredom, pain, mistrust? Address the root.", "Structured therapy has good outcomes — change is genuinely possible with the right support."],
-  "avoidant behavior": ["Avoidance maintains anxiety every time. Each small exposure reduces it a little.", "Start at the least frightening end of your avoidance hierarchy and build from there.", "Celebrate every act of facing discomfort, however small it appears from the outside.", "A therapist specializing in anxiety can guide you through graduated exposure safely."],
-  "dependent behavior": ["Take one small independent action today — make a decision entirely on your own.", "Notice when you seek reassurance and practice briefly sitting with the uncertainty instead.", "Build one relationship or interest that exists independently of your primary attachment.", "Gradually expand your comfort with uncertainty — it's a skill that grows with practice."],
-  "personality disorders": ["Your patterns of thinking and feeling developed for reasons that made sense at the time.", "Identifying your specific patterns — through therapy or self-reflection — is the starting point for change.", "Dialectical, schema, or psychodynamic therapy can create meaningful, lasting change.", "Progress with personality patterns is slower but absolutely real and worth the investment."],
-  "trauma": ["Healing from trauma is possible — it requires time, safety, and often professional support.", "Grounding exercises help when trauma memories intrude — bring yourself back to now.", "You do not have to process this alone. Trauma-focused therapy exists specifically for this.", "Your responses to trauma make complete sense given what you experienced."],
-  "ptsd": ["EMDR and trauma-focused CBT have the strongest evidence for PTSD recovery.", "Grounding in the present moment when triggered: name where you are, what you see, that you are safe.", "Build a specific safety plan for when triggers hit — having it ready reduces the overwhelm.", "Healing is non-linear. A bad day does not erase your progress."],
-  "flashbacks": ["Say out loud: 'This is a memory. It is not happening now. I am safe in this moment.'", "Ground yourself in your senses immediately — cold water, your feet on the floor, your name.", "Slow your exhale — a long exhale signals safety to your nervous system within 90 seconds.", "Move your body gently — walking or stretching interrupts the flashback cycle physically."],
-  "nightmares": ["A consistent calming pre-sleep routine reduces nightmare frequency measurably.", "Image Rehearsal Therapy — rewriting the nightmare with a new ending — has strong clinical evidence.", "Avoid screen content that activates threat-detection in the two hours before sleep.", "Speak with a therapist if nightmares are frequent — trauma-focused therapy addresses their root."],
-  "confusion": ["Write everything down — when thoughts are outside your head they're easier to sort.", "Take a real break before trying to think through something complex — your brain needs rest.", "Talk it through with someone — externalizing confusion reveals the answer faster.", "Ask: what is the one question I most need answered right now? Start there."],
-  "detachment": ["Engage your senses deliberately: hold something cold, listen to music with attention.", "Do something you used to love, even mechanically — show up and see what happens.", "Small, low-pressure social contact can gently pull you back into connection.", "Detachment often protects us from being overwhelmed. Gently invite yourself back when ready."],
-  "memory loss": ["Keep a consistent journal or planner and make updating it a daily habit.", "Mental exercises — puzzles, learning new skills, word games — maintain cognitive reserve.", "Speak to a healthcare provider about persistent memory concerns — they can identify causes.", "Minimize multitasking: focused, single-task attention consolidates memory better."],
-  "self-esteem issues": ["List five specific things you've done well — real instances, not generalizations.", "Challenge every self-critical thought: would you say this to someone you love? Then don't say it to yourself.", "Self-esteem builds from aligned action, not from waiting to feel better first.", "Your worth is inherent and not contingent on performance, approval, or outcomes."],
-  "communication difficulties": ["Use 'I feel' statements rather than 'you always' or 'you never' — it changes everything.", "Listen to understand, not to prepare your response. Most communication issues are listening issues.", "Practice saying exactly what you mean in low-stakes situations to build the skill.", "Writing what you want to say before difficult conversations creates clarity and reduces reactivity."],
-  "trust issues": ["Past betrayals don't mean all people will betray you — distinguish the pattern from the person.", "Trust can be extended incrementally — you don't have to give it all at once.", "Notice which people have been consistent over time — your trust radar is more accurate than you think.", "Therapy can help you identify the root of trust difficulties and work through them safely."],
-  "relationship anxiety": ["Communicate your fears early and clearly — hidden anxiety grows, shared anxiety shrinks.", "Practice self-soothing when anxiety spikes instead of seeking constant reassurance.", "Your worth is not defined by whether someone chooses to stay — it exists independently.", "Anxious attachment patterns are learnable and changeable with the right support."],
-  "separation anxiety": ["Build a rich, meaningful life that extends beyond any single relationship.", "Practice graduated separation in safe, low-stakes situations to build tolerance.", "Communicate your needs openly with trusted people — transparency reduces anxiety.", "Therapy, particularly attachment-focused work, addresses the root of separation anxiety effectively."],
-  "over-sensitivity": ["Sensitivity is a genuine gift — it allows for depth of connection and perception unavailable to others.", "Create a small buffer between stimulus and response: breathe before reacting.", "Choose carefully what you expose yourself to — protecting your sensitivity is intelligent, not weak.", "Name and honor your sensitivity rather than fighting it — working with it is more effective."],
-  "failure": ["Every person you admire has a longer list of failures than you know about. They kept going.", "Ask what the failure taught you — that converts it from a verdict into information.", "Failure is evidence you attempted something. Inaction has its own, far larger cost.", "You are not your failures. You are entirely how you choose to respond to them."],
-  "success": ["Celebrate this genuinely — you built something, and that deserves real acknowledgment.", "Reflect on what specifically made this work so you can do it again intentionally.", "Success can bring unexpected anxiety or emptiness — all reactions are valid.", "Let this momentum carry you toward the next meaningful thing."],
-  "motivation": ["Motivation reliably follows action — start before you feel ready, always.", "Reconnect with your core 'why' — not the goal, but the reason the goal matters.", "Schedule the work and protect it like an appointment with someone you respect.", "Lower the activation barrier: set up your environment so starting is easy, not effortful."],
-  "burnout": ["Rest is a biological necessity, not a reward for sufficient productivity.", "Identify the single biggest energy drain and address it with urgency.", "Reconnect with the original meaning behind what you're doing — it may still be there.", "Burnout signals a system that must change. Pushing through without changing makes it chronic."],
-  "compassion fatigue": ["Protect your restoration time fiercely — it is what enables you to keep giving.", "Set clear limits on how much emotional labor you take on and honor those limits.", "Seek supervision, peer support, or therapy to process what you're absorbing.", "You cannot pour from an empty vessel. Filling yourself is not selfishness — it is sustainability."],
-  "social anxiety": ["Most people are too focused on themselves to observe you as closely as you fear.", "Shift attention outward during social situations — focus on understanding the other person.", "Prepare a few genuine questions you can ask in social situations — it reduces pressure enormously.", "Regular, low-stakes social exposure gradually desensitizes social anxiety — consistency matters."],
-  "self-doubt": ["Find five past pieces of evidence that you are capable. They exist — find them.", "Act despite the doubt — confidence is built through action, not from waiting to feel certain.", "Separate useful, productive caution from sabotaging inner criticism. They feel different.", "Everyone doubts themselves. The only meaningful difference is whether you act anyway."],
-  "anxiety attacks": ["This will pass. You are not in danger, even though your body is sending that signal.", "Focus entirely on your exhale — extend it to 8 counts. This activates the calm response.", "Press your feet into the floor, feel your weight, describe what you see out loud.", "Name it: 'I am having an anxiety attack. It is temporary. I will be okay.'"],
-  "helplessness": ["Find the one smallest thing in this situation you can actually influence. Start only there.", "Connection breaks the helplessness loop — reach out to one person, even briefly.", "Your history of overcoming difficulty is real evidence your helplessness is not permanent.", "Learned helplessness is real and it is also learnable in the other direction."],
-  "irritability": ["Check basic needs first: sleep, food, water, physical comfort — irritability is often physiological.", "Give yourself a brief timeout before responding to anything that triggers you.", "Name the irritability to yourself and others — 'I'm finding everything difficult today' gives context.", "Regular vigorous exercise is one of the most effective biological regulators of irritability."],
-  "overwhelmed": ["Stop completely. Breathe. You can only ever do one thing at a time. What is the one thing?", "Write every single thing you're tracking. Then remove anything that is not truly urgent.", "Ask for help. Overwhelm is often the signal that you're carrying too much alone.", "Reduce your inputs temporarily: notifications off, news off, extra commitments declined."],
-  "procrastination": ["The 2-minute rule: if it takes under 2 minutes, do it immediately without debate.", "Identify the smallest possible first action and commit only to that one step.", "Ask what you're really avoiding — fear, boredom, uncertainty? That's the actual obstacle.", "Make starting frictionless: have your tools ready so the first action requires zero setup."],
-  "sleep": ["Consistent sleep and wake times are the single most impactful sleep hygiene intervention.", "Make your room cool, dark, and quiet — your sleep environment determines sleep quality.", "Avoid caffeine after 2pm and large meals within 3 hours of bed.", "Try 4-7-8 breathing before sleep: inhale 4, hold 7, exhale 8 counts — it induces sleepiness."],
-  "exhaustion": ["Your body is making a clear request. Honor it before the request becomes a demand.", "Rest without guilt. Recovery is productive. You are not falling behind — you are catching up.", "Check sleep, nutrition, hydration, and emotional load — exhaustion usually has a compound cause.", "You cannot maintain output without input. Rest is part of the system, not a break from it."],
-  "stuck": ["A change of environment — even briefly — often shifts a stuck mind more than more thinking does.", "Talk to someone completely outside your situation — fresh perspective is genuinely valuable.", "Take the smallest possible action in any direction. Movement creates new possibilities.", "Ask: what would I tell a close friend in exactly my situation? Then take that advice."],
-  "numbness": ["Engage your senses intensely and deliberately — cold, heat, strong flavor, physical movement.", "Do something you used to love even if you feel nothing yet. Show up first.", "Emotional numbness often protects us from overwhelm. Be patient and gentle as it lifts.", "If numbness persists, please speak to a professional — it is treatable and addressable."],
-  "boundaries": ["Saying no is a complete sentence. You don't owe an explanation with every limit you set.", "Where you feel most consistently drained, there is a boundary that needs to exist.", "Healthy limits protect relationships — they don't damage them. Resentment damages them.", "Practice small boundaries in low-stakes situations to build the skill gradually."],
-  "letting go": ["What are you holding onto that no longer serves who you are becoming?", "Letting go doesn't mean it didn't matter — it means you choose peace over pain.", "Write what you're holding onto, then consciously release it through a ritual act.", "Some endings are the beginning of what's actually meant for you."],
-  "decisions": ["Align the decision with your core values — when values are clear, decisions become easier.", "Set a decision deadline and honor it — open decisions consume more energy than any choice.", "Trust your gut alongside your analysis. Both contain real intelligence.", "There is rarely a perfect decision — there is a good enough decision made with the information you have."],
-  "relax": ["Try progressive muscle relaxation: tense and release each muscle group from feet to forehead.", "Box breathing: inhale 4 counts, hold 4, exhale 4, hold 4. Repeat 4 times.", "Put everything down for 10 real minutes. Close apps, put the phone face down. Fully stop.", "5-4-3-2-1 sensory grounding: name what you see, hear, feel, smell, and taste right now."],
-  "burnout": ["Complete rest — not productive rest, actual rest — is the only real recovery from burnout.", "Identify the root cause and change it. Burnout that isn't addressed becomes chronic illness.", "Reconnect with what you care about beyond the specific thing burning you out.", "Please speak with a healthcare provider — burnout has physical as well as psychological dimensions."],
-  "trusting yourself": ["Your instincts are built from every experience you've had. They deserve more credit than you give them.", "Start with low-stakes decisions and trust yourself there. Confidence builds upward.", "Reflect on past times you trusted yourself and it worked — that evidence is real.", "The inner critic that undermines self-trust often borrowed its voice from someone else. It's not yours."],
-  "direction": ["Write down what a meaningful life looks like for you in concrete, specific terms.", "Identify the single most important thing you care about and ask if your actions align with it.", "It's okay not to have the whole map — one clear next step is all you need right now.", "Talking to someone who knows you well and challenges you lovingly can provide enormous clarity."],
-  "out-of-control": ["Identify the one smallest thing you can control in this situation. That is your anchor.", "When nothing feels within control, controlling your body — breathing, posture, movement — restores agency.", "Write down what is actually happening without the interpretation. Facts are more manageable than stories.", "Reach out to someone — feeling out of control in isolation is the hardest version of this."],
-  "misunderstood": ["Being misunderstood is painful. You are allowed to feel that pain without immediately trying to fix it.", "Ask one question before explaining yourself: does this person actually want to understand me?", "Write out exactly what you mean — clarity to yourself often precedes clarity in communication.", "Some people are not in a position to understand you. That says more about the fit than your worth."],
-  "intimacy": ["Intimacy requires vulnerability — and vulnerability is a practice, not a spontaneous feeling.", "Start with small acts of openness in safe relationships — intimacy is built incrementally.", "Ask what specifically scares you about closeness. Naming it reduces its power.", "Past experiences may have taught you that closeness is unsafe. Those lessons can be unlearned."]
-};
-
-// ═══════════════════════════════════════════════
-//  DATA — SOOTHING MESSAGES
-// ═══════════════════════════════════════════════
-
-const SOOTHING = [
-  "Everything will be okay. You are genuinely stronger than you realize right now.",
-  "You are not alone in this. I am here, and so are people who care about you.",
-  "Tough times never last — tough people always do.",
-  "Take a deep breath. You've handled hard things before, and you can handle this.",
-  "You are loved, and you are enough, exactly as you are today.",
-  "It's okay to not be okay. That's what makes you fully human.",
-  "You matter. Your feelings are completely valid and real.",
-  "One step at a time. One moment at a time. That's all it takes.",
-  "Your strength is greater than you can see from inside this difficulty.",
-  "This moment will pass. You will get through it. Your record so far is perfect.",
-  "Asking for help is strength. It is the bravest thing a person can do.",
-  "You are worthy of love and kindness, especially from yourself.",
-  "You are so much more than your struggles or your hardest days.",
-  "You are doing the best you can with what you have. That is genuinely enough.",
-  "Even in the darkest nights, morning still comes. It always does.",
-  "You don't need all the answers right now. Right now is enough.",
-  "Healing is not linear, and that's completely, perfectly okay.",
-  "Be gentle with yourself today — you deserve the same care you give others.",
-  "Progress, however small, is still progress. All of it counts.",
-  "I believe in you, even on the days you can't believe in yourself.",
-  "You are not broken. You are healing. There is a difference.",
-  "Rest is not giving up. Rest is how you keep going.",
-  "You've made it through every single hard day so far. That record holds.",
-  "Your feelings are real, valid, and they deserve to be honored.",
-  "Kindness toward yourself isn't selfishness. It is how you survive and then thrive.",
-  "You are allowed to take up space, to feel, and to need things.",
-  "Something small and beautiful is happening somewhere near you right now.",
-  "The very fact that you're still here, still trying, still feeling — that is remarkable.",
-  "You carry more wisdom than you give yourself credit for.",
-  "The world is genuinely better with you in it. I mean that completely."
-];
-
-// ═══════════════════════════════════════════════
-//  DATA — SUPPORTIVE RESPONSES (after listening)
-// ═══════════════════════════════════════════════
-
-const SUPPORT_RESPONSES = [
-  "I heard everything you shared. What you're carrying is real and heavy, and I want you to know — you are not alone in it. You have more strength than you can see from where you're standing right now.",
-  "Thank you for trusting me with that. It took courage to say it out loud. What you're feeling is completely valid, and I believe deeply in your capacity to move through this.",
-  "I listened to every word. You've been through a lot. And I also heard something else underneath all of it — resilience. It's woven through everything you said, even the hardest parts.",
-  "You shared something vulnerable, and that matters. That took real courage. I'm proud of you. You are stronger than this moment, and it will not always feel the way it feels right now.",
-  "I hear you. All of it. You are not alone. What you're feeling is human, and I believe completely in your ability to find your way through this.",
-  "What you shared is important. You are important. And even in the middle of all of this, something in you is still reaching for something better. That is everything."
-];
-
-// ═══════════════════════════════════════════════
-//  DATA — FLOWCHARTS
-// ═══════════════════════════════════════════════
-
-const FLOWCHARTS = {
-  anxiety: {
-    title: "ANXIETY MANAGEMENT FLOW",
-    speech: "Here is your anxiety management flowchart. When anxiety arises, the first step is always to pause and breathe. Then identify the trigger, assess what you can control, take action or practice acceptance, and finish with a grounding activity. Let this guide become a reflex.",
-    nodes: [
-      { type:"start",    text:"Anxiety Arises" },
-      { type:"process",  text:"Pause. Breathe slowly and deeply." },
-      { type:"decision", text:"Can you identify the trigger?" },
-      { type:"branch",   yes:"Name it clearly. Write it down.", no:"Use 5-4-3-2-1 grounding now.", yesType:"process", noType:"action" },
-      { type:"process",  text:"Is this within your control?" },
-      { type:"branch",   yes:"Make a small action plan.", no:"Practice acceptance and release.", yesType:"action", noType:"action" },
-      { type:"process",  text:"Engage in a calming activity." },
-      { type:"end",      text:"Check In With Yourself ✓" }
-    ]
-  },
-  depression: {
-    title: "DEPRESSION RECOVERY PATH",
-    speech: "Here is your depression recovery pathway. Start by naming your mood without judgment. Attend to basic needs first. Set one tiny goal. Reach out to someone. If symptoms persist beyond two weeks, please seek professional support. Recovery is real and it is possible.",
-    nodes: [
-      { type:"start",    text:"Notice Low Mood" },
-      { type:"process",  text:"Name what you're feeling without judgment." },
-      { type:"decision", text:"Basic needs met? (Food, water, sleep)" },
-      { type:"branch",   yes:"Good. Build from here.", no:"Tend to one basic need first.", yesType:"action", noType:"action" },
-      { type:"process",  text:"Set one tiny, achievable goal for today." },
-      { type:"process",  text:"Reach out to one person — text, call, or visit." },
-      { type:"decision", text:"Symptoms lasting 2+ weeks?" },
-      { type:"branch",   yes:"Seek professional support now.", no:"Continue daily self-care.", yesType:"action", noType:"action" },
-      { type:"end",      text:"Recovery Is Ongoing ✓" }
-    ]
-  },
-  stress: {
-    title: "STRESS RELIEF CIRCUIT",
-    speech: "Here is your stress relief circuit. Name the stressor precisely. Assess urgency and importance. Apply an immediate coping tool. Breathe, move, and hydrate. Then address the root cause where possible to prevent recurrence.",
-    nodes: [
-      { type:"start",    text:"Feeling Stressed" },
-      { type:"process",  text:"Name the stressor specifically." },
-      { type:"decision", text:"Urgent AND important?" },
-      { type:"branch",   yes:"Handle it now with full focus.", no:"Schedule it or release it.", yesType:"action", noType:"action" },
-      { type:"process",  text:"Apply an immediate coping tool." },
-      { type:"process",  text:"Breathe slowly. Move your body. Drink water." },
-      { type:"process",  text:"Address the root cause if possible." },
-      { type:"end",      text:"Return to Baseline ✓" }
-    ]
-  },
-  "self-esteem": {
-    title: "SELF-ESTEEM BUILDING LOOP",
-    speech: "Here is your self-esteem building loop. Notice the negative thought, challenge whether it's fact or fear, replace it with a compassionate truth, take one aligned action, and acknowledge your own effort. Repeat this loop consistently and watch what builds.",
-    nodes: [
-      { type:"start",    text:"Negative Self-Thought Arises" },
-      { type:"process",  text:"Notice and name the thought clearly." },
-      { type:"decision", text:"Is this a fact or a fear?" },
-      { type:"branch",   yes:"Challenge with real evidence.", no:"Acknowledge and gently reframe.", yesType:"process", noType:"process" },
-      { type:"process",  text:"Replace with a compassionate, honest truth." },
-      { type:"process",  text:"Take one action aligned with your values." },
-      { type:"process",  text:"Acknowledge your own effort, always." },
-      { type:"end",      text:"Self-Belief Reinforced ✓" }
-    ]
-  },
-  crisis: {
-    title: "CRISIS MANAGEMENT PROTOCOL",
-    speech: "Here is your crisis management protocol. If you are in a crisis: Stop. You are safe right now. Use grounding immediately. Contact someone you trust. If you are in immediate danger, please call emergency services. Otherwise, reach a crisis helpline. Remove yourself from triggers and focus entirely on your breath until you are stable.",
-    nodes: [
-      { type:"start",    text:"Feeling In Crisis or Overwhelmed" },
-      { type:"action",   text:"STOP. You are safe right now. Breathe." },
-      { type:"process",  text:"5-4-3-2-1 Grounding: use all your senses." },
-      { type:"process",  text:"Contact someone you trust immediately." },
-      { type:"decision", text:"In immediate physical danger?" },
-      { type:"branch",   yes:"Call emergency services now.", no:"Call or text a crisis helpline.", yesType:"action", noType:"action" },
-      { type:"process",  text:"Remove yourself from triggers gently." },
-      { type:"process",  text:"Focus on breathing until you feel stable." },
-      { type:"end",      text:"Pursue Ongoing Professional Support ✓" }
-    ]
-  },
-  sleep: {
-    title: "SLEEP HYGIENE SYSTEM",
-    speech: "Here is your sleep hygiene system. Set and protect consistent sleep and wake times. Begin your wind-down one hour before bed with screens off. Cool and darken your room. Use a calming ritual. If your mind races, write thoughts down or try breathing exercises. And in the morning, wake at the same time regardless.",
-    nodes: [
-      { type:"start",    text:"Preparing for Sleep" },
-      { type:"process",  text:"Set a consistent sleep time — protect it." },
-      { type:"process",  text:"1 hour before bed: all screens off." },
-      { type:"process",  text:"Cool the room. Dim all lights." },
-      { type:"process",  text:"Wind-down ritual: journal, tea, light stretching." },
-      { type:"decision", text:"Mind still racing?" },
-      { type:"branch",   yes:"Write thoughts out to release them.", no:"Try 4-7-8 breathing technique.", yesType:"action", noType:"action" },
-      { type:"process",  text:"Morning: same wake time, every day." },
-      { type:"end",      text:"Consistent Sleep Rhythm Built ✓" }
-    ]
-  }
-};
-
-// ═══════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════
-
-let currentMode      = null;
-let recognition      = null;
-let shouldStop       = false;
-let isListening      = false;
-let isVenting        = false;
-let lastAdvice       = "";
-let subtitleTimerK   = null;
-let currentUtterance = null;   // FIX: track utterance to prevent callback cascade
-let preferredVoice   = null;   // FIX: pre-loaded voice for reduced lag
-let synthHeartbeat   = null;   // FIX: Chrome 15s pause bug workaround
-let ventBuffer       = "";     // FIX: accumulate transcript for "kevin stop" detection
-const synth = window.speechSynthesis;
-
-// ── Pre-load voices to eliminate first-speak lag ──────────────────────────
-synth.addEventListener('voiceschanged', loadVoices);
-loadVoices();
-
-// ═══════════════════════════════════════════════
-//  SPEECH SYNTHESIS
-// ═══════════════════════════════════════════════
-
-function speak(text, cb) {
-  // FIX 1: Detach previous utterance handlers BEFORE cancel to prevent
-  // the old onend from firing its callback and cascading unexpected speech.
-  if (currentUtterance) {
-    currentUtterance.onend  = null;
-    currentUtterance.onerror = null;
-    currentUtterance = null;
-  }
-  if (synth.speaking) {
-  synth.pause();
-  synth.resume(); // smoother than cancel
-}
-
-  const u = new SpeechSynthesisUtterance(text);
-  currentUtterance = u;
-
-  // FIX 3: Use pre-loaded local voice to eliminate startup lag
-  if (preferredVoice) u.voice = preferredVoice;
-  u.rate  = 0.92;
-  u.pitch = 1.0;
-  showKevinSub(text);
-  setTimeout(() => setStatus('speaking'), 0);
-
-  u.onend = () => {
-    if (currentUtterance !== u) return; // stale utterance — ignore
-    currentUtterance = null;
-    clearTimeout(synthHeartbeat);
-    setStatus('idle');
-    if (cb) cb();
-  };
-  u.onerror = () => {
-    if (currentUtterance !== u) return;
-    currentUtterance = null;
-    clearTimeout(synthHeartbeat);
-    setStatus('idle');
-    // Do NOT fire cb on error — prevents unexpected restarts
-  };
-  if (!text || !text.trim()) return;
-  synth.speak(u);
-  currentUtterance = u;
-  // FIX 3: Chrome speechSynthesis pauses silently after ~15 s.
-  // Periodically pause+resume to keep it alive.
-  clearTimeout(synthHeartbeat);
-  (function heartbeat() {
-    if (synth.speaking) {
-      synth.pause();
-      synth.resume();
-      synthHeartbeat = setTimeout(heartbeat, 15000);
-    }
-  })(); // start after 10s delay via the recursive call above — kick off now
-  synthHeartbeat = setTimeout(function hb() {
-    if (synth.speaking) { synth.pause(); synth.resume(); synthHeartbeat = setTimeout(hb, 15000); }
-  }, 15000);
-}
-
-function showKevinSub(text) {
-  const el = document.getElementById('kevinLine');
-  el.textContent = text;
-  el.classList.remove('fading');
-  el.classList.add('visible');
-  clearTimeout(subtitleTimerK);
-  const dur = Math.max(3500, text.length * 58);
-  subtitleTimerK = setTimeout(() => {
-    el.classList.add('fading');
-    setTimeout(() => { el.classList.remove('visible','fading'); el.textContent = ''; }, 480);
-  }, dur);
-}
-
-function showUserSub(text) {
-  const el = document.getElementById('userLine');
-  el.textContent = `"${text}"`;
-  el.classList.remove('fading');
-  el.classList.add('visible');
-  setTimeout(() => {
-    el.classList.add('fading');
-    setTimeout(() => { el.classList.remove('visible','fading'); el.textContent = ''; }, 480);
-  }, 3200);
-}
-
-// ═══════════════════════════════════════════════
-//  STATUS / ORB VISUAL STATE
-// ═══════════════════════════════════════════════
-
-function setStatus(state) {
-  const badge   = document.getElementById('statusBadge');
-  const orb     = document.getElementById('micOrb');
-  const orbArea = document.getElementById('orbArea');
-  const lbl     = document.getElementById('orbLabel');
-  badge.className = `status-badge ${state}`;
-  const labels = { idle:'IDLE', listening:'LISTENING', speaking:'SPEAKING', processing:'PROCESSING' };
-  badge.textContent = labels[state] || 'IDLE';
-  orb.className     = `mic-orb ${state === 'listening' ? 'listening' : state === 'speaking' ? 'speaking' : ''}`;
-  orbArea.className = `orb-area ${state}`;
-  const orbLabels = {
-    idle:       currentMode ? 'TAP TO SPEAK' : 'SELECT A MODE',
-    listening:  'LISTENING...',
-    speaking:   'K.E.V.I.N SPEAKING',
-    processing: 'PROCESSING...'
-  };
-  lbl.textContent = orbLabels[state] || 'SELECT A MODE';
-  lbl.className   = `orb-label ${state !== 'idle' ? 'active' : ''}`;
-}
-
-// ═══════════════════════════════════════════════
-//  SPEECH RECOGNITION FACTORY
-// ═══════════════════════════════════════════════
-
-function newRecognition(continuous = false, interim = false) {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { speak("Speech recognition is not available. Please open this in Chrome or Edge."); return null; }
-  const r = new SR();
-  r.interimResults = interim;
-  r.continuous     = continuous;
-  return r;
-}
-
-function stopRecognition() {
-  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
-  isListening = false;
-}
-
-// ═══════════════════════════════════════════════
-//  MODE ACTIVATION
-// ═══════════════════════════════════════════════
-
-function activateMode(mode) {
-  stopRecognition();
-  // Detach utterance before cancel — prevents mode-switch from firing stale callbacks
-  if (currentUtterance) {
-    currentUtterance.onend  = null;
-    currentUtterance.onerror = null;
-    currentUtterance = null;
-  }
-  synth.cancel();
-  clearTimeout(synthHeartbeat);
-  shouldStop  = false;
-  isVenting   = false;
-  ventBuffer  = "";
-  currentMode = mode;
-
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.mode-btn.${mode}`).classList.add('active');
-
-  const cp = document.getElementById('chartPanel');
-  if (mode === 'charts') { cp.classList.add('active'); buildChartPanel(); }
-  else cp.classList.remove('active');
-
-  setStatus('idle');
-
-  const intros = {
-    speak:   "Speak mode activated. Tap the orb, then say 'more' for a message, 'keep talking' for continuous support, 'thanks', or 'exit'.",
-    listen:  "Listen mode activated. Tap the orb whenever you're ready. I'll listen quietly. Say 'Kevin stop' when you want a response.",
-    consult: "Consult mode activated. Tap the orb and tell me what you're feeling. I recognize over a hundred conditions.",
-    charts:  "Charts mode activated. Mental health lifestyle guides are now visible. Click a chart name, or tap the orb and say its name."
-  };
-  speak(intros[mode]);
-}
-
-function exitMode() {
-  stopRecognition();
-  // Detach current utterance before cancel to avoid stray callbacks
-  if (currentUtterance) {
-    currentUtterance.onend  = null;
-    currentUtterance.onerror = null;
-    currentUtterance = null;
-  }
-  synth.cancel();
-  clearTimeout(synthHeartbeat);
-  shouldStop  = true;
-  isVenting   = false;
-  ventBuffer  = "";
-  currentMode = null;
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('chartPanel').classList.remove('active');
-  setStatus('idle');
-  document.getElementById('orbLabel').textContent = 'SELECT A MODE';
-  ['kevinLine','userLine'].forEach(id => {
-    const el = document.getElementById(id);
-    el.classList.remove('visible','fading');
-    el.textContent = '';
-  });
-}
-
-// ═══════════════════════════════════════════════
-//  ORB CLICK HANDLER
-// ═══════════════════════════════════════════════
-
-function handleMicClick() {
-  if (!currentMode) {
-    speak("Please select a mode first. Choose Speak, Listen, Consult, or Charts.");
-    return;
-  }
-  if (synth.speaking) { synth.cancel(); setStatus('idle'); return; }
-  if (isListening)    { stopRecognition(); setStatus('idle'); return; }
-
-  const handlers = { speak:startSpeak, listen:startListen, consult:startConsult, charts:startChartVoice };
-  if (handlers[currentMode]) handlers[currentMode]();
-}
-
-// ═══════════════════════════════════════════════
-//  SPEAK MODE
-// ═══════════════════════════════════════════════
-
-function startSpeak() {
-  recognition = newRecognition();
-  if (!recognition) return;
-  isListening = true;
-  setStatus('listening');
-
-  recognition.onresult = e => {
-    const t = e.results[0][0].transcript.toLowerCase().trim();
-    isListening = false;
-    showUserSub(t);
-    setStatus('processing');
-
-    if (t.includes('exit'))                                  speak("Goodbye, dear. Take gentle care of yourself.", exitMode);
-    else if (t.includes('keep talking')||t.includes('cont')) keepTalking();
-    else if (t.includes('more')||t.includes('another'))     { const m=SOOTHING[rnd(SOOTHING)]; speak(m,startSpeak); }
-    else if (t.includes('thanks')||t.includes('thank you')) speak("You're welcome, dear. I'm always right here whenever you need me.", startSpeak);
-    else if (t.includes('help'))                            speak("I'm here to help. Remember — you are stronger than you know right now.", startSpeak);
-    else speak("Say 'more' for a message, 'keep talking' for continuous support, 'thanks', or 'exit'.", startSpeak);
-  };
-
-  recognition.onerror = e => {
-    isListening = false; setStatus('idle');
-    if (!shouldStop && e.error !== 'aborted') setTimeout(startSpeak, 1400);
-  };
-  recognition.onend = () => { isListening = false; };
-  try { recognition.start(); } catch(e) { isListening=false; setStatus('idle'); }
-}
-
-let isSpeakingLoop = false;
-
-function keepTalking() {
-  if (shouldStop || currentMode !== 'speak') {
-    isSpeakingLoop = false;
-    return;
-  }
-
-  isSpeakingLoop = true;
-
-  const m = SOOTHING[rnd(SOOTHING)];
-  speak(m, () => {
-    if (!shouldStop && currentMode === 'speak') {
-      setTimeout(keepTalking, 250);
-    }
-  });
-}
-// ═══════════════════════════════════════════════
-//  LISTEN MODE
-// ═══════════════════════════════════════════════
-
-function startListen() {
-  // FIX 2: Use interimResults=true so we catch speech as it comes in,
-  // and accumulate across segments — "kevin" and "stop" may arrive separately.
-  recognition = newRecognition(true, true);
-  if (!recognition) return;
-  isListening = true;
-  isVenting   = true;
-  ventBuffer  = "";   // reset accumulated transcript
-  setStatus('listening');
-
-  recognition.onresult = e => {
-    // Collect only final results from this event batch
-    let finalChunk = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) {
-        finalChunk += e.results[i][0].transcript + ' ';
-      }
-    }
-    finalChunk = finalChunk.toLowerCase().trim();
-
-    if (finalChunk) {
-      showUserSub(finalChunk);
-      // Accumulate into buffer; keep last 400 chars to avoid unbounded growth
-      ventBuffer = (ventBuffer + ' ' + finalChunk).slice(-400).trim();
-    }
-
-    // FIX 2: Check the accumulated buffer for stop phrases, not just the latest chunk.
-    // This catches cases where "kevin" and "stop" land in separate result events.
-    const check = ventBuffer;
-    const stopNow = check.includes('kevin stop') || check.includes('stop kevin') ||
-                    check.includes('kevin, stop') || check.includes("kevin,stop") ||
-                    // Also catch just "stop" as a standalone word (common shorthand)
-                    /\bstop\b/.test(finalChunk);
-    const exitNow = check.includes('exit') || finalChunk.includes('exit');
-
-    if (exitNow) {
-      ventBuffer = ''; isVenting = false; stopRecognition();
-      speak("Goodbye, dear. I'm proud of you for reaching out. Please take care of yourself.", exitMode);
-    } else if (stopNow) {
-      ventBuffer = ''; isVenting = false; stopRecognition();
-      const r = SUPPORT_RESPONSES[rnd(SUPPORT_RESPONSES)];
-      speak(r, () => speak("I'm here whenever you need me. Tap the orb if you'd like to continue.", () => { isVenting = false; }));
-    }
-    // Otherwise — keep listening silently, just show transcript briefly
-  };
-
-  recognition.onerror = e => {
-    isListening = false;
-    if (!shouldStop && e.error !== 'aborted' && isVenting) setTimeout(startListen, 1400);
-  };
-
-  recognition.onend = () => {
-    if (!shouldStop && isVenting) { try { recognition.start(); } catch(e){ isListening=false; } }
-    else isListening = false;
-  };
-
-  try { recognition.start(); } catch(e) { isListening=false; setStatus('idle'); }
-}
-
-// ═══════════════════════════════════════════════
-//  CONSULT MODE
-// ═══════════════════════════════════════════════
-
-function startConsult() {
-  recognition = newRecognition();
-  if (!recognition) return;
-  isListening = true;
-  setStatus('listening');
-
-  recognition.onresult = e => {
-    const t = e.results[0][0].transcript.toLowerCase().trim();
-    isListening = false;
-    showUserSub(t);
-    setStatus('processing');
-
-    if (t.includes('exit')) { speak("Take care, dear. Help is always here.", exitMode); return; }
-    if ((t.includes('again') || t.includes('repeat')) && lastAdvice) {
-      speak(lastAdvice, () => speak("Say 'again' to hear that once more, or tell me about another concern.", startConsult));
-      return;
-    }
-
-    let matched = false;
-    for (const [kw, advices] of Object.entries(ADVICE_DB)) {
-      if (t.includes(kw.toLowerCase())) {
-        const advice = advices[rnd(advices)];
-        lastAdvice = advice;
-        speak(`For ${kw}: ${advice}`, () =>
-          speak("Say 'again' to repeat that, or tell me about another concern.", startConsult)
-        );
-        matched = true;
-        break;
-      }
-    }
-    if (!matched)
-      speak("I didn't catch a specific condition in that. Try naming what you're feeling — like anxiety, depression, stress, or burnout.", startConsult);
-  };
-
-  recognition.onerror = e => {
-    isListening=false; setStatus('idle');
-    if (!shouldStop && e.error !== 'aborted') setTimeout(startConsult, 1400);
-  };
-  recognition.onend = () => { isListening=false; };
-  try { recognition.start(); } catch(e){ isListening=false; setStatus('idle'); }
-}
-
-// ═══════════════════════════════════════════════
-//  CHART VOICE
-// ═══════════════════════════════════════════════
-
-function startChartVoice() {
+  function startChartVoice() {
   recognition = newRecognition();
   if (!recognition) return;
   isListening = true;
@@ -1555,23 +1019,7 @@ function startChartVoice() {
     isListening=false; setStatus('idle');
     if (!shouldStop && e.error !== 'aborted') setTimeout(startChartVoice, 1000);
   };
-
-  // FIX 4: If recognition ends with no result (timeout/silence), restart automatically
-  recognition.onend = () => {
-    isListening = false;
-    if (!shouldStop && !gotResult && currentMode === 'charts' && !synth.speaking) {
-      setTimeout(startChartVoice, 600);
-    }
-  };
-
-  try { recognition.start(); } catch(e){ isListening=false; setStatus('idle'); }
-}
-
-// ═══════════════════════════════════════════════
-//  CHART DISPLAY
-// ═══════════════════════════════════════════════
-
-function buildChartPanel() {
+  function buildChartPanel() {
   const sel = document.getElementById('chartSelect');
   sel.innerHTML = '';
   Object.keys(FLOWCHARTS).forEach(key => {
@@ -1582,69 +1030,7 @@ function buildChartPanel() {
     sel.appendChild(btn);
   });
 }
-
-// FIX 4: Accept optional callback — when called from voice, cb = startChartVoice
-// so recognition automatically restarts after the chart speech finishes.
-function displayChart(key, cb) {
-  const chart = FLOWCHARTS[key];
-  if (!chart) return;
-
-  document.querySelectorAll('.chart-btn').forEach(b =>
-    b.classList.toggle('active', b.textContent.toLowerCase().replace(/ /g,'-') === key ||
-                                  b.textContent.toLowerCase() === key.replace(/-/g,' '))
-  );
-
-  const display = document.getElementById('chartDisplay');
-  display.innerHTML = `<div class="flowchart"><div class="flowchart-title">${chart.title}</div>${renderNodes(chart.nodes)}</div>`;
-
-  // Stagger node animations
-  display.querySelectorAll('.fc-node').forEach((node, i) => {
-    node.style.animationDelay = `${i * 0.1}s`;
-  });
-
-  speak(chart.speech, cb);
-}
-
-function renderNodes(nodes) {
-  return nodes.map((node, i) => {
-    if (node.type === 'branch') {
-      return `
-        <div class="fc-arrow"></div>
-        <div class="fc-branch">
-          <div class="fc-branch-col">
-            <div class="fc-branch-label">YES</div>
-            <div class="fc-node ${node.yesType}" style="animation-delay:${i*0.1}s">${node.yes}</div>
-          </div>
-          <div class="fc-branch-col">
-            <div class="fc-branch-label">NO</div>
-            <div class="fc-node ${node.noType}" style="animation-delay:${(i+0.5)*0.1}s">${node.no}</div>
-          </div>
-        </div>`;
-    }
-    return `${i > 0 ? '<div class="fc-arrow"></div>' : ''}
-            <div class="fc-node ${node.type}" style="animation-delay:${i*0.1}s">${node.text}</div>`;
-  }).join('');
-}
-
-// ═══════════════════════════════════════════════
-//  MODAL
-// ═══════════════════════════════════════════════
-
-function openModal()  { document.getElementById('modalOverlay').classList.add('open'); }
-function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
-function overlayClose(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
-
-// ═══════════════════════════════════════════════
-//  UTILITY
-// ═══════════════════════════════════════════════
-
-function rnd(arr) { return Math.floor(Math.random() * arr.length); }
-
-// ═══════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════
-
-// Disabled auto speak to prevent mic conflicts
+  }
 </script>
 </body>
 </html>
