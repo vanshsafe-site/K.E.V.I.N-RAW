@@ -142,7 +142,7 @@ recognition.onresult = (event) => {
             speak("Please say 'yes' if you want me to listen, or 'exit' to quit.", startListening);
         }
     } else {
-        if (transcript.includes("pooja stop")) {
+        if (transcript.includes("kevin stop")) {
             isListeningForProblems = false;
             const randomResponse = supportiveResponses[Math.floor(Math.random() * supportiveResponses.length)];
             speak(randomResponse, () => {
